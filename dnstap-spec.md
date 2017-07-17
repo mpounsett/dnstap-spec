@@ -59,16 +59,43 @@
 
 Abstract paragraphs here.
 
+dnstap is a flexible, structured binary log format for DNS software.  It uses Protocol Buffers to enco
+de events that occur inside DNS software in an implemento-neutral format.  A variety of implementation exist that have been incorporated (or are in the process of getting incorporated) into a variety of DNS operating systems including BIND, KNOT, Unbound and Power DNS.
+
+This work is intended to become an Informational RFC to document the current state of dnstap.
+
 {mainmatter}
 
 # Introduction
 
-Main ID goes here.
+dnstap is a flexible, structured binary log format for DNS software.  It uses Protocol Buffers to encode events that occur inside DNS software in an implemento-neutral format.  A variety of implementation exist that have been incorporated (or are in the process of getting incorporated) into a variety of DNS operating systems including BIND, KNOT, Unbound and Power DNS.
 
-## Subsection
+This work is intended to become an Informational RFC to document the current state of dnstap.
 
-And here!
+# Architecture
 
+There are four logical components in the dnstap system:
+The encoding format, which specifies how to encode event messages, so called "dnstap payloads"
+The transport, which carries serialized event messages over a reliable byte-stream socket.
+The sender, which generates events using the encoding format and hands them off to the transport.
+The receiver, which consumes serialized events from the transport, potentially deserializing them using the encoding format.
+
+## Encoding Format
+
+## Transport
+
+## Event Generator
+
+## Event Consumer
+
+
+# Security Considerations
+
+<add text>
+
+# IANA Considerations
+
+<add text>
 
 {backmatter}
 
