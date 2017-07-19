@@ -65,11 +65,11 @@ There are four logical components in the dnstap system: the encoding format, whi
 
 # Security Considerations
 
-<add text>
+A> Add text
 
 # IANA Considerations
 
-<add text>
+A> Add text
 
 {backmatter}
 
