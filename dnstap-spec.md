@@ -50,6 +50,12 @@ dnstap is a flexible, structured binary log format for DNS software.  It uses Pr
 
 This work is intended to become an Informational RFC to document the current state of dnstap.
 
+# Definitions
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they appear in all capitals, as shown here.
+
+DNS terms in this document are used according to the definitions in "DNS Terminology" [@!RFC7719] as updated by [@!I-D.ietf-dnsop-terminology-bis].
+
 # Architecture
 
 There are four logical components in the dnstap system: the encoding format, which specifies how to encode event messages, so called "dnstap payloads"; the transport, which carries serialized event messages over a reliable byte-stream socket; the sender, which generates events using the encoding format and hands them off to the transport; the receiver, which consumes serialized events from the transport, potentially deserializing them using the encoding format.
