@@ -109,7 +109,7 @@ The first transaction ID listed MUST be the transaction ID of the DNS message th
 
 ##### Example 1
 
-A Client Query arrives at a server with an empty cache.  It is assigned transaction ID 1.  A Recursive Query is sent upstream which is assigned transaction ID 2.  A new Client Query arives which is identical to CQ1, and is assigned transaction ID 3.  Because a related iterative query is already in flight (RQ2) the name server does not initiate a new RQ.  The Recursive Reply paired with RQ2 arrives and is also assigned transaction ID 2.  The CR paired with CQ1 is generated, assigned transaction ID 2, and sent to the client.  The CR paired with CQ3 is also generated, assigned transaction ID 3, and sent to the client.
+A Client Query arrives at a server with an empty cache.  It is assigned transaction ID 1.  A Recursive Query is sent upstream which is assigned transaction ID 2.  A new Client Query arives which is identical to CQ1, and is assigned transaction ID 3.  Because a related iterative query is already in flight (RQ2) the name server does not initiate a new RQ.  The Recursive Reply paired with RQ2 arrives and is also assigned transaction ID 2.  The CR paired with CQ1 is generated, assigned transaction ID 1, and sent to the client.  The CR paired with CQ3 is also generated, assigned transaction ID 3, and sent to the client.
 
 The following protobuf messages appear in the stream:
 
