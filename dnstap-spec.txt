@@ -1,0 +1,336 @@
+
+
+
+
+Network Working Group                                        M. Pounsett
+Internet-Draft                                    Nimbus Operations Inc.
+Intended status: Informational                                   M. Kaeo
+Expires: September 25, 2019                            Farsight Security
+                                                          March 24, 2019
+
+
+         DNSTAP: A Flexible, Binary Log Format for DNS Software
+                     draft-pounsett-dnstab-spec-00
+
+Abstract
+
+   Abstract paragraphs here.
+
+   dnstap is a flexible, structured binary log format for DNS software.
+   It uses Protocol Buffers to encode events that occur inside DNS
+   software in an implemento-neutral format.  A variety of
+   implementation exist that have been incorporated (or are in the
+   process of getting incorporated) into a variety of DNS operating
+   systems including BIND, KNOT, Unbound and Power DNS.
+
+   This work is intended to become an Informational RFC to document the
+   current state of dnstap.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on September 25, 2019.
+
+Copyright Notice
+
+   Copyright (c) 2019 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+
+
+
+Pounsett & Kaeo        Expires September 25, 2019               [Page 1]
+
+Internet-Draft          DNSTAP Log Format for DNS             March 2019
+
+
+   (https://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Definitions . . . . . . . . . . . . . . . . . . . . . . . . .   2
+   3.  Architecture  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     3.1.  Protbuf Message Types . . . . . . . . . . . . . . . . . .   3
+       3.1.1.  DNSTAP  . . . . . . . . . . . . . . . . . . . . . . .   3
+       3.1.2.  Message . . . . . . . . . . . . . . . . . . . . . . .   3
+       3.1.3.  Map . . . . . . . . . . . . . . . . . . . . . . . . .   4
+     3.2.  Transport . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.3.  Event Generator . . . . . . . . . . . . . . . . . . . . .   5
+     3.4.  Event Consumer  . . . . . . . . . . . . . . . . . . . . .   5
+   4.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   6.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
+   Appendix A.  Document Source  . . . . . . . . . . . . . . . . . .   6
+   Appendix B.  Changelist . . . . . . . . . . . . . . . . . . . . .   6
+     B.1.  Version pounsett-00 (unpublished) . . . . . . . . . . . .   6
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   dnstap is a flexible, structured binary log format for DNS software.
+   It uses Protocol Buffers to encode events that occur inside DNS
+   software in an implemento-neutral format.  A variety of
+   implementation exist that have been incorporated (or are in the
+   process of getting incorporated) into a variety of DNS operating
+   systems including BIND, KNOT, Unbound and Power DNS.
+
+   This work is intended to become an Informational RFC to document the
+   current state of dnstap.
+
+2.  Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+
+
+
+Pounsett & Kaeo        Expires September 25, 2019               [Page 2]
+
+Internet-Draft          DNSTAP Log Format for DNS             March 2019
+
+
+   DNS terms in this document are used according to the definitions in
+   "DNS Terminology" [RFC7719] as updated by
+   [I-D.ietf-dnsop-terminology-bis].
+
+3.  Architecture
+
+   There are four logical components in the dnstap system: the encoding
+   format, which specifies how to encode event messages, so called
+   "dnstap payloads"; the transport, which carries serialized event
+   messages over a reliable byte-stream socket; the sender, which
+   generates events using the encoding format and hands them off to the
+   transport; the receiver, which consumes serialized events from the
+   transport, potentially deserializing them using the encoding format.
+
+3.1.  Protbuf Message Types
+
+3.1.1.  DNSTAP
+
+3.1.2.  Message
+
+3.1.2.1.  Message Fields
+
+3.1.2.1.1.  view
+
+   +-----------+----------------+
+   | Data Type | Message Types  |
+   +-----------+----------------+
+   |   bytes   | CQ, CR, AQ, AR |
+   +-----------+----------------+
+
+   In implementations where the operator can configure split DNS (or
+   views), the DNS server SHOULD populate this field with the
+   implementation's identifier for the view that matched the relevant
+   Query.  The field is optional, and implementations which do not
+   support split DNS or are not configured to enable split DNS should
+   omit this field.
+
+   The contents of the field are the implementation-dependant identifier
+   for the view.  Implementations SHOULD choose an identifier which is
+   meaningful to the operator.
+
+3.1.2.1.2.  transaction
+
+   +-----------+--------------------------------+
+   | Data Type |         Message Types          |
+   +-----------+--------------------------------+
+   |   bytes   | SQ, SR, CQ, CR, RQ, RR, AQ, AR |
+   +-----------+--------------------------------+
+
+
+
+Pounsett & Kaeo        Expires September 25, 2019               [Page 3]
+
+Internet-Draft          DNSTAP Log Format for DNS             March 2019
+
+
+   When a query is received, name servers SHOULD assign a transaction ID
+   to the message.  When logging the Query message and its corresponding
+   Response, the name server MUST apply that transaction ID to both
+   messages.  The same transaction ID name space is shared among all
+   messages types that implement them.  Name servers MUST ensure that a
+   transaction ID is unique over a long enough time span to avoid
+   ambiguity in matching Response pairs in a dnstap consumer; it is
+   RECOMMENDED that transaction IDs be generated using a UUID.
+
+3.1.3.  Map
+
+   A Map message is written to the protobuf stream to indicate an
+   association between two or more other protobuf messages in the
+   stream.  The association is created by listing the transaction IDs of
+   a related group of DNSTAP messages.  The exact relationship between
+   the messages is dependent on, and must be inferred from, the types of
+   messages involved and their relative positions (or times) in the
+   stream.
+
+3.1.3.1.  Map Fields
+
+3.1.3.1.1.  transaction
+
+   +-----------+
+   | Data Type |
+   +-----------+
+   |   bytes   |
+   +-----------+
+
+   The 'transaction' field is a repeated field of type bytes.  Each
+   transaction entry MUST refer to the transaction ID of a protobuf
+   message earlier in the stream.  A Map message MUST have at least two
+   transaction IDs.
+
+   The first transaction ID listed MUST be the transaction ID of the DNS
+   message that initiated the mapping.  The order of the second and
+   subsequent transaction IDs in the Map message are defined as having
+   no intrinsic meaning.
+
+3.1.3.2.  Examples
+
+3.1.3.2.1.  Example 1
+
+   A Client Query arrives at a server with an empty cache.  It is
+   assigned transaction ID 1.  A Recursive Query is sent upstream which
+   is assigned transaction ID 2.  A new Client Query arives which is
+   identical to CQ1, and is assigned transaction ID 3.  Because a
+   related iterative query is already in flight (RQ2) the name server
+
+
+
+Pounsett & Kaeo        Expires September 25, 2019               [Page 4]
+
+Internet-Draft          DNSTAP Log Format for DNS             March 2019
+
+
+   does not initiate a new RQ.  The Recursive Reply paired with RQ2
+   arrives and is also assigned transaction ID 2.  The CR paired with
+   CQ1 is generated, assigned transaction ID 1, and sent to the client.
+   The CR paired with CQ3 is also generated, assigned transaction ID 3,
+   and sent to the client.
+
+   The following protobuf messages appear in the stream:
+
+   Message type: CQ  transaction: 1
+   Message type: RQ  transaction: 2
+   Map transaction: 1  transaction: 2
+   Message type: CQ  transaction: 3
+   Map transaction: 3  transaction: 2
+   Message type: RR  transaction: 2
+   Message type: CR  transaction: 1
+   Message type: CR  transaction: 3
+
+3.1.3.2.2.  Example 2
+
+3.2.  Transport
+
+3.3.  Event Generator
+
+3.4.  Event Consumer
+
+4.  Security Considerations
+
+      Add text
+
+5.  IANA Considerations
+
+      Add text
+
+6.  Normative References
+
+   [I-D.ietf-dnsop-terminology-bis]
+              Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
+              Terminology", draft-ietf-dnsop-terminology-bis-14 (work in
+              progress), September 2018.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC7719]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
+              Terminology", RFC 7719, DOI 10.17487/RFC7719, December
+              2015, <https://www.rfc-editor.org/info/rfc7719>.
+
+
+
+Pounsett & Kaeo        Expires September 25, 2019               [Page 5]
+
+Internet-Draft          DNSTAP Log Format for DNS             March 2019
+
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+Appendix A.  Document Source
+
+      [RFC Editor: Please remove this section before publication.]
+
+   This document is maintained at Github at
+   <https://github.com/mpounsett/dnstap-spec>.  Issue reports and pull
+   requests are gratefully accepted here.
+
+   The XML and TXT versions of this document are generated from Markdown
+   using mmark by Miek Gieben.  mmark is available at
+   <https://github.com/miekg/mmark>.
+
+Appendix B.  Changelist
+
+      [RFC Editor: Please remove this section before publication.]
+
+B.1.  Version pounsett-00 (unpublished)
+
+   Initial Submission
+
+Authors' Addresses
+
+   Matthew Pounsett
+   Nimbus Operations Inc.
+   Toronto, ON
+   Canada
+
+   Email: matt@conundrum.com
+
+
+   Merike Kaeo
+   Farsight Security
+   Seattle, WA
+   USA
+
+   Email: merike@doubleshotsecurity.com
+
+
+
+
+
+
+
+
+
+
+
+Pounsett & Kaeo        Expires September 25, 2019               [Page 6]
