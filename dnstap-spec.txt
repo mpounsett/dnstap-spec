@@ -10,7 +10,7 @@ Expires: September 25, 2019                            Farsight Security
 
 
          DNSTAP: A Flexible, Binary Log Format for DNS Software
-                     draft-pounsett-dnstab-spec-00
+                     draft-pounsett-dnstap-spec-00
 
 Abstract
 

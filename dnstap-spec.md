@@ -1,7 +1,7 @@
 % Title = "DNSTAP: A Flexible, Binary Log Format for DNS Software"
 % abbrev = "DNSTAP Log Format for DNS"
 % category = "info"
-% docName = "draft-pounsett-dnstab-spec-00"
+% docName = "draft-pounsett-dnstap-spec-00"
 % ipr = "trust200902"
 % area = "OPS"
 % workgroup = ""
