@@ -54,7 +54,8 @@ This work is intended to become an Informational RFC to document the current sta
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they appear in all capitals, as shown here.
 
-DNS terms in this document are used according to the definitions in "DNS Terminology" [@!RFC7719] as updated by [@!I-D.ietf-dnsop-terminology-bis].
+DNS terms in this document are used according to the definitions in "DNS
+Terminology" [@!RFC7719] as updated by [@!RFC8499].
 
 # Architecture
 
